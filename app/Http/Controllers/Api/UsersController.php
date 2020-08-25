@@ -33,6 +33,27 @@ class UsersController extends Controller
         // 清楚缓存
         Cache::forget($request->verification_key);
         
+        return (new UserResource($user))->showSensitiveFields();
+    }
+    
+    /**
+     * 展示用户信息
+     * @param User $user
+     * @param UserRequest $request
+     * @return User
+     */
+    public function show(User $user,Request  $request)
+    {
         return new UserResource($user);
+    }
+    
+    /**
+     * 展示个人信息
+     * @param UserRequest $request
+     * @return mixed
+     */
+    public function me(Request $request)
+    {
+        return (new UserResource($request->user()))->showSensitiveFields();
     }
 }

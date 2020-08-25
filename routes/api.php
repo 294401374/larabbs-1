@@ -44,6 +44,12 @@ Route::prefix('v1')->namespace('Api')
     
     // 访问限制
     Route::middleware('throttle:' . config('api.rate_limits.access'))->group(function(){
-    
+        // 用户信息
+        Route::get('users/{user}', 'UsersController@show')->name('users.show');
+        
+        // 验证登录的接口
+        Route::middleware('auth:api')->group(function(){
+            Route::get('user', 'UsersController@me')->name('user.show');
+        });
     });
 });
