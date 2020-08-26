@@ -46,7 +46,11 @@ Route::prefix('v1')->namespace('Api')
     Route::middleware('throttle:' . config('api.rate_limits.access'))->group(function(){
         // 用户信息
         Route::get('users/{user}', 'UsersController@show')->name('users.show');
+        // 帖子分类列表
         Route::get('categories', 'CategoriesController@index')->name('categories.index');
+        // 帖子列表&&帖子详情
+        Route::resource('topics', 'TopicsController')->only(['index', 'show']);
+        
     
         // 验证登录的接口
         Route::middleware('auth:api')->group(function(){
@@ -55,6 +59,8 @@ Route::prefix('v1')->namespace('Api')
             Route::patch('user', 'UsersController@update')->name('user.update');
             // 上传图片
             Route::post('images', 'ImagesController@store')->name('images.store');
+            // 帖子发布，更新，删除
+            Route::resource('topics', 'TopicsController')->only(['store', 'update', 'destroy']);
         });
     });
 });
