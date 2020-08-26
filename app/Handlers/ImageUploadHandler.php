@@ -3,13 +3,14 @@
 namespace App\Handlers;
 
 use Image;
-use Str;
+use Illuminate\Support\Str;
+use Illuminate\Http\UploadedFile;
 
 class ImageUploadHandler
 {
     protected $allowed_ext = ["png", "jpg", "gif", 'jpeg'];
 
-    public function save($file, $folder, $file_prefix, $max_width = false)
+    public function save(UploadedFile $file, $folder, $file_prefix, $max_width = false)
     {
         // 构建存储的文件夹规则，值如：uploads/images/avatars/201709/21/
         // 文件夹切割能让查找效率更高。

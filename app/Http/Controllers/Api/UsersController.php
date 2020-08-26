@@ -30,7 +30,7 @@ class UsersController extends Controller
             'password' => $request->password,
         ]);
         
-        // 清楚缓存
+        // 清除缓存
         Cache::forget($request->verification_key);
         
         return (new UserResource($user))->showSensitiveFields();
