@@ -51,6 +51,7 @@ Route::prefix('v1')->namespace('Api')
         Route::middleware('auth:api')->group(function(){
             // 获取当前登录用户的信息
             Route::get('user', 'UsersController@me')->name('user.show');
+            Route::patch('user', 'UsersController@update')->name('user.update');
             // 上传图片
             Route::post('images', 'ImagesController@store')->name('images.store');
         });
