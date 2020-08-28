@@ -6,21 +6,60 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\TopicRequest;
 use App\Http\Resources\TopicResource;
 use App\Models\Topic;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class TopicsController extends Controller
 {
+    /**
+     * 帖子列表
+     * @param Request $request
+     * @param Topic $topic
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
     public function index(Request $request, Topic $topic)
     {
         $query = $topic->query();
         if ($categoryId = $request->category_id){
             $query->where('category_id', $categoryId);
         }
-        $topics = $query->with('user', 'category')
-                        ->withOrder($request->order)
-                        ->paginate();
+        $topics = QueryBuilder::for(Topic::class)->allowedIncludes('user', 'category')
+                                                 ->allowedFilters([
+                                                     'title',
+                                                     AllowedFilter::exact('category_id'),
+                                                     AllowedFilter::scope('withOrder')->default('recentReplied'),
+                                                 ])
+                                                 ->paginate();
         return TopicResource::collection($topics);
     }
+    
+    /**
+     * 用户帖子
+     * @param Request $request
+     * @param User $user
+     */
+    public function userIndex(Request $request, User $user)
+    {
+        $query = $user->topics()
+                      ->getQuery();
+        $topics = QueryBuilder::for($query)->allowedIncludes('user', 'category')
+                                           ->allowedFilters([
+                                               'title',
+                                               AllowedFilter::exact('category_id'),
+                                               AllowedFilter::scope('withOrder')->default('recentReplied'),
+                                           ])
+                                           ->paginate();
+        return TopicResource::collection($topics);
+    }
+    
+    /**
+     * 创建帖子
+     * @param TopicRequest $request
+     * @param Topic $topic
+     * @return TopicResource
+     */
     public function store(TopicRequest $request, Topic $topic)
     {
         $topic->fill($request->all());
@@ -29,6 +68,13 @@ class TopicsController extends Controller
         return new TopicResource($topic);
     }
     
+    /**
+     * 更新帖子
+     * @param TopicRequest $request
+     * @param Topic $topic
+     * @return TopicResource
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function update(TopicRequest $request, Topic $topic)
     {
         $this->authorize('update', $topic);
@@ -36,6 +82,12 @@ class TopicsController extends Controller
         return new TopicResource($topic);
     }
     
+    /**
+     * 删除帖子
+     * @param Topic $topic
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function destroy(Topic $topic)
     {
         $this->authorize('destroy', $topic);

@@ -48,6 +48,8 @@ Route::prefix('v1')->namespace('Api')
         Route::get('users/{user}', 'UsersController@show')->name('users.show');
         // 帖子分类列表
         Route::get('categories', 'CategoriesController@index')->name('categories.index');
+        // 某人帖子
+        Route::get('users/{user}/topics', 'TopicsController@userIndex')->name('users.topics.index');
         // 帖子列表&&帖子详情
         Route::resource('topics', 'TopicsController')->only(['index', 'show']);
         
