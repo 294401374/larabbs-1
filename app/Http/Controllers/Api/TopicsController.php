@@ -16,7 +16,9 @@ class TopicsController extends Controller
         if ($categoryId = $request->category_id){
             $query->where('category_id', $categoryId);
         }
-        $topics = $query->withOrder($request->order)->paginate();
+        $topics = $query->with('user', 'category')
+                        ->withOrder($request->order)
+                        ->paginate();
         return TopicResource::collection($topics);
     }
     public function store(TopicRequest $request, Topic $topic)
