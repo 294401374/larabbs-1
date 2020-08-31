@@ -55,6 +55,19 @@ class TopicsController extends Controller
     }
     
     /**
+     * 帖子详情
+     * @param $topicId
+     * @return TopicResource
+     */
+    public function show($topicId)
+    {
+        
+        $topic = QueryBuilder::for(Topic::class)->allowedIncludes('user', 'category')
+                                                ->findOrFail($topicId);
+        return new TopicResource($topic);
+    }
+    
+    /**
      * 创建帖子
      * @param TopicRequest $request
      * @param Topic $topic
