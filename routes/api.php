@@ -63,8 +63,10 @@ Route::prefix('v1')->namespace('Api')
             Route::post('images', 'ImagesController@store')->name('images.store');
             // 帖子发布，更新，删除
             Route::resource('topics', 'TopicsController')->only(['store', 'update', 'destroy']);
-            // 评论帖子
+            // 新增回复
             Route::post('topics/{topic}/replies', 'RepliesController@store')->name('topics.replies.store');
+            // 删除回复
+            Route::delete('topics/{topic}/replies/{reply}', 'RepliesController@destroy')->name('topics.replies.destroy');
         });
     });
 });
